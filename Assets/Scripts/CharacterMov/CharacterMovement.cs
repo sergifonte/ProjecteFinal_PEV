@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    public float Speed = 4.2f;
+    public float Speed = 1f;
     public float RotationSpeed = 10f;
 
     private CharacterController _controller;
