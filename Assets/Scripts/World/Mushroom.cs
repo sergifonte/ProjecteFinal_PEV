@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class Mushroom : MonoBehaviour
 {
-    public float stateValue; // +0.2f blau, -0.2f vermell
+    public float stateValue;
     private MushroomSpawner _spawner;
 
     void Start()
     {
-        // Troba el MushroomSpawner
         _spawner = FindObjectOfType<MushroomSpawner>();
     }
 
@@ -16,9 +15,11 @@ public class Mushroom : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             WorldState.Instance.AddState(stateValue);
-            Destroy(gameObject);
             
-            // Respawn del xampinyó a una nova posició
+            Debug.Log("State changed by " + stateValue);
+            
+            Destroy(gameObject);
+
             if (gameObject.CompareTag("Blue"))
             {
                 _spawner.RespawnMushroom(_spawner.blueMushroomPrefab, _spawner.bluePositions, _spawner.activeBlueMushrooms);

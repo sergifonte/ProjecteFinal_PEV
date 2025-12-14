@@ -20,6 +20,6 @@ public class WorldState : MonoBehaviour
         state += value;
         state = Mathf.Clamp(state, -1f, 1f);
 
-        Debug.Log("World State: " + state);
+        Debug.Log("World State updated: " + state);
     }
 }

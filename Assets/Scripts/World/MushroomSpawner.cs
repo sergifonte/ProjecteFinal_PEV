@@ -16,32 +16,56 @@ public class MushroomSpawner : MonoBehaviour
 
     void Start()
     {
-        SpawnMushrooms(blueMushroomPrefab, bluePositions, activeBlueMushrooms);
-        SpawnMushrooms(redMushroomPrefab, redPositions, activeRedMushrooms);
+        InitializeMushrooms(blueMushroomPrefab, bluePositions, activeBlueMushrooms);
+        InitializeMushrooms(redMushroomPrefab, redPositions, activeRedMushrooms);
     }
 
-    void SpawnMushrooms(GameObject mushroomPrefab, Transform[] positions, List<GameObject> activeMushrooms)
+    void InitializeMushrooms(GameObject mushroomPrefab, Transform[] positions, List<GameObject> activeMushrooms)
     {
         int amount = Mathf.Min(maxMushrooms, positions.Length);
 
         for (int i = 0; i < amount; i++)
         {
-            int posIndex = Random.Range(0, positions.Length);
-            GameObject newMushroom = Instantiate(mushroomPrefab, positions[posIndex].position, Quaternion.identity);
-            activeMushrooms.Add(newMushroom);
+            int posIndex = Random.Range(0, positions.Length); 
+            if (!IsPositionOccupied(positions[posIndex].position))
+            {
+                GameObject newMushroom = Instantiate(mushroomPrefab, positions[posIndex].position, Quaternion.identity);
+                activeMushrooms.Add(newMushroom);
+            }
+            else
+            {
+                i--;
+            }
         }
     }
 
     public void RespawnMushroom(GameObject mushroomPrefab, Transform[] positions, List<GameObject> activeMushrooms)
     {
-        if (activeMushrooms.Count >= maxMushrooms)
+        bool respawned = false;
+        while (!respawned)
         {
-            Destroy(activeMushrooms[0]);
-            activeMushrooms.RemoveAt(0);
+            int posIndex = Random.Range(0, positions.Length);
+            if (!IsPositionOccupied(positions[posIndex].position))
+            {
+                GameObject newMushroom = Instantiate(mushroomPrefab, positions[posIndex].position, Quaternion.identity);
+                activeMushrooms.Add(newMushroom);
+                respawned = true;
+            }
         }
 
-        int posIndex = Random.Range(0, positions.Length);
-        GameObject newMushroom = Instantiate(mushroomPrefab, positions[posIndex].position, Quaternion.identity);
-        activeMushrooms.Add(newMushroom);
+        Debug.Log("Active Mushrooms: " + activeMushrooms.Count);
+    }
+
+    bool IsPositionOccupied(Vector3 position)
+    {
+        Collider[] colliders = Physics.OverlapSphere(position, 0.5f);
+        foreach (Collider col in colliders)
+        {
+            if (col.CompareTag("Blue") || col.CompareTag("Red"))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
