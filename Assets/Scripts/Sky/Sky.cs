@@ -2,30 +2,24 @@ using UnityEngine;
 
 public class Sky : MonoBehaviour
 {
-    [Header("References")]
     public Light sunLight;
 
-    [Header("Skyboxes")]
     public Material dystopiaSkybox;
     public Material normalSkybox;
     public Material utopiaSkybox;
 
-    [Header("Sun Colors")]
     public Color dystopiaSunColor = new Color(0.5f, 0.5f, 0.5f);
     public Color normalSunColor = Color.white;
     public Color utopiaSunColor = new Color(1f, 0.9f, 0.7f);
 
-    [Header("Sun Intensity")]
     public float dystopiaSunIntensity = 0.4f;
     public float normalSunIntensity = 1f;
     public float utopiaSunIntensity = 1.6f;
 
-    [Header("Ambient Light")]
     public Color dystopiaAmbient = new Color(0.25f, 0.25f, 0.25f);
     public Color normalAmbient = new Color(0.6f, 0.6f, 0.6f);
     public Color utopiaAmbient = new Color(0.9f, 0.85f, 0.7f);
 
-    [Header("Transition")]
     public float transitionSpeed = 2f;
 
     private float currentState;
