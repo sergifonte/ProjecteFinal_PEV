@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    public float Speed = 5f;
-    public float RotationSpeed = 2f;
+    public float Speed = 8f;
+    public float RotationSpeed = 0.2f;
     public float Gravity = -9.81f;
 
     private CharacterController _controller;
