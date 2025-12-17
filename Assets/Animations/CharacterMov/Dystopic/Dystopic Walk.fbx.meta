@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ae4ddca7d3c0e4500bc596e45e700b18
+guid: e996b16ac1709fa4da67884984b849e7
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -22,7 +22,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -31,18 +31,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Walking
+      name: Dystopic Walk
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 29
+      lastFrame: 90
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -599,7 +599,7 @@ ModelImporter:
     - name: mixamorig:LeftHandThumb2
       parentName: mixamorig:LeftHandThumb1
       position: {x: 0.0032976882, y: 0.025601482, z: -4.9327126e-10}
-      rotation: {x: -0.00003629796, y: -0.0007271162, z: -0.0780741, w: 0.9969473}
+      rotation: {x: -0.00003629796, y: -0.00072711625, z: -0.0780741, w: 0.99694735}
       scale: {x: 1, y: 1, z: 1}
     - name: mixamorig:LeftHandThumb3
       parentName: mixamorig:LeftHandThumb2
@@ -644,7 +644,7 @@ ModelImporter:
     - name: mixamorig:LeftHandMiddle3
       parentName: mixamorig:LeftHandMiddle2
       position: {x: 0.000007057896, y: 0.03177892, z: -1.509423e-10}
-      rotation: {x: 0.0000005549939, y: -0.00012743696, z: -0.002410656, w: 0.99999714}
+      rotation: {x: 0.00000055499396, y: -0.00012743694, z: -0.0024106563, w: 0.9999971}
       scale: {x: 1, y: 1, z: 1}
     - name: mixamorig:LeftHandMiddle4
       parentName: mixamorig:LeftHandMiddle3
@@ -714,7 +714,7 @@ ModelImporter:
     - name: mixamorig:RightHandThumb1
       parentName: mixamorig:RightHand
       position: {x: -0.020620085, y: 0.021477055, z: 0.012410406}
-      rotation: {x: 0.061562434, y: 0.0058492594, z: 0.34997353, w: 0.9347163}
+      rotation: {x: 0.061562434, y: 0.005849259, z: 0.34997353, w: 0.93471617}
       scale: {x: 1, y: 1, z: 1}
     - name: mixamorig:RightHandThumb2
       parentName: mixamorig:RightHandThumb1
@@ -734,7 +734,7 @@ ModelImporter:
     - name: mixamorig:RightHandIndex1
       parentName: mixamorig:RightHand
       position: {x: -0.025699353, y: 0.07053782, z: 0.00050919794}
-      rotation: {x: -0.006371676, y: -0.00073925743, z: 0.054562833, w: 0.9984898}
+      rotation: {x: -0.0063716765, y: -0.0007392574, z: 0.054562837, w: 0.99848974}
       scale: {x: 1, y: 1, z: 1}
     - name: mixamorig:RightHandIndex2
       parentName: mixamorig:RightHandIndex1
@@ -844,7 +844,7 @@ ModelImporter:
     - name: mixamorig:RightLeg
       parentName: mixamorig:RightUpLeg
       position: {x: -0.0012476965, y: 0.24070087, z: -0.0014491667}
-      rotation: {x: -0.022162355, y: 0.00037958272, z: -0.008822522, w: 0.9997154}
+      rotation: {x: -0.022162355, y: 0.00037958275, z: -0.008822522, w: 0.99971545}
       scale: {x: 1, y: 1, z: 1}
     - name: mixamorig:RightFoot
       parentName: mixamorig:RightLeg

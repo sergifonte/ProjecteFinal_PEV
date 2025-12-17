@@ -15,5 +15,6 @@ public class CharacterAnimator : MonoBehaviour
     {
         float speed = _input.GetInputInHorizontalPlane().magnitude;
         _animator.SetFloat("Speed", speed);
+        _animator.SetFloat("State", WorldState.Instance.state);
     }
 }
