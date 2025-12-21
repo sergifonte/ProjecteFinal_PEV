@@ -4,10 +4,13 @@ public class Fog : MonoBehaviour
 {
     public Color dystopiaFogColor = new Color(0.86f, 0.99f, 1.18f);
     public Color normalFogColor = Color.clear;
+    public Color utopiaFogColor = new Color(1f, 0.9f, 0.7f);
 
-    
+
     public float dystopiaFogDensity = 0.04f;
     public float normalFogDensity = 0f;
+    public float utopiaFogDensity = 0.01f;
+
 
     
     public float transition = 2f;
@@ -48,16 +51,18 @@ public class Fog : MonoBehaviour
         }
         else
         {
+            float t = Mathf.InverseLerp(0f, 1f, state);
+
             currentFogDensity = Mathf.Lerp(
-                currentFogDensity,
                 normalFogDensity,
-                Time.deltaTime * transition
+                utopiaFogDensity,
+                t
             );
 
             currentFogColor = Color.Lerp(
-                currentFogColor,
                 normalFogColor,
-                Time.deltaTime * transition
+                utopiaFogColor,
+                t
             );
         }
 
@@ -74,6 +79,7 @@ public class Fog : MonoBehaviour
         );
     }
 
+
     void ApplyImmediateFog()
     {
         if (WorldState.Instance == null)
@@ -89,8 +95,9 @@ public class Fog : MonoBehaviour
         }
         else
         {
-            RenderSettings.fogDensity = normalFogDensity;
-            RenderSettings.fogColor = normalFogColor;
+            float t = Mathf.InverseLerp(0f, 1f, state);
+            RenderSettings.fogDensity = Mathf.Lerp(normalFogDensity, utopiaFogDensity, t);
+            RenderSettings.fogColor = Color.Lerp(normalFogColor, utopiaFogColor, t);
         }
     }
 }
