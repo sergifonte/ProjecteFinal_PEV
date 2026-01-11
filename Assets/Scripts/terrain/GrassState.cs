@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class GrassState : MonoBehaviour
@@ -9,16 +8,21 @@ public class GrassState : MonoBehaviour
     public Color normalColor = new Color(0.376f, 0.545f, 0.29f);
     public Color utopiaColor = new Color(0.2f, 1f, 0.3f);
 
-    public ParticleSystem magicParticles;
-
     public float transitionSpeed = 2f;
     float currentState;
+
+    ParticleSystem[] magicParticles;
+
+    void Awake()
+    {
+        // Coge todos los ParticleSystem que estén en hijos
+        magicParticles = GetComponentsInChildren<ParticleSystem>();
+    }
 
     void Update()
     {
         currentState = Mathf.Lerp(currentState, WorldState.Instance.state, Time.deltaTime * transitionSpeed);
         UpdateGrass(currentState);
-        Debug.Log(WorldState.Instance.state);
     }
 
     void UpdateGrass(float state)
@@ -27,13 +31,22 @@ public class GrassState : MonoBehaviour
         {
             float t = Mathf.InverseLerp(-1, 0, state);
             terrainMaterial.color = Color.Lerp(dystopiaColor, normalColor, t);
-            magicParticles.gameObject.SetActive(false);
+            SetParticlesActive(false);
         }
         else
         {
             float t = Mathf.InverseLerp(0, 1, state);
             terrainMaterial.color = Color.Lerp(normalColor, utopiaColor, t);
-            magicParticles.gameObject.SetActive(state > 0.7f);
+            SetParticlesActive(state > 0.7f);
+        }
+    }
+
+    void SetParticlesActive(bool active)
+    {
+        foreach (var ps in magicParticles)
+        {
+            if (active && !ps.isPlaying) ps.Play();
+            else if (!active && ps.isPlaying) ps.Stop();
         }
     }
 }
