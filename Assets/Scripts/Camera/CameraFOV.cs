@@ -5,7 +5,7 @@ public class CameraEffects : MonoBehaviour
     public Camera _cam;
     public float utopiaFOV = 75f;
     public float normalFOV = 60f;
-    public float dystopiaFOV = 45f;
+    public float dystopiaFOV = 30f;
     public float transitionSpeed = 2f;
 
     void Start() => _cam = GetComponent<Camera>();

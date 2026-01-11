@@ -6,7 +6,7 @@ public class StreetLights : MonoBehaviour
 
     [Header("Ajustes de la Luz (Suelo)")]
     public Color colorUtopia = new Color(1f, 0.7f, 0.3f); // Naranja
-    public Color colorDistopia = new Color(0.1f, 0.4f, 1f); // Azul
+    public Color colorDistopia = new Color(255, 255, 255); // Azul
     
     public float intensidadUtopia = 10f;
     public float intensidadDistopia = 5f;

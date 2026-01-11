@@ -25,7 +25,6 @@ public class WorldStateUI : MonoBehaviour
         else
         {
             statusText.text = "Neutral";
-
         }
     }
 }
