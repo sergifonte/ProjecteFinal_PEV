@@ -7,56 +7,56 @@ public class RockState : MonoBehaviour
     private Rigidbody rb;
 
     [Header("Configuracion Fisica")]
-    public float masaDistopia = 500f; // No se puede empujar
-    public float masaUtopia = 2f;    // Muy ligera
-
-    public float transitionSpeed = 2f;
+    public float masaDistopia = 500f;
+    public float masaUtopia = 2f;
+    public float transitionSpeed = 5f; // Una mica més ràpid perquè es noti
     private float currentState;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        // Esto evita que atraviese el suelo
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        
+        // Forçem que els materials siguin únics per a cada roca
+        if(rendererNormal) rendererNormal.material = new Material(rendererNormal.material);
+        if(rendererMusgo) rendererMusgo.material = new Material(rendererMusgo.material);
     }
 
     void Update()
     {
         if (WorldState.Instance == null) return;
 
-        // Suavizamos el valor del estado global
+        // Llegim el valor directament del WorldState
         currentState = Mathf.Lerp(currentState, WorldState.Instance.state, Time.deltaTime * transitionSpeed);
 
-        // 1. FISICA: Cambiar la masa
+        // 1. FISICA
         float t = Mathf.InverseLerp(-1f, 1f, currentState);
         rb.mass = Mathf.Lerp(masaDistopia, masaUtopia, t);
 
-        // 2. VISUAL: Cambio gradual de texturas (Alpha)
-        // En el centro (0), ambas son opacas (1f) para que no sea transparente
-        float alphaNormal = currentState >= 0 ? 1f : Mathf.InverseLerp(-0.8f, 0f, currentState);
-        float alphaMusgo = currentState <= 0 ? 1f : Mathf.InverseLerp(0f, 0.8f, currentState);
+        // 2. VISUAL (Alpha)
+        // Utilitzem una corba simple: 
+        // Normal: invisible a -1, visible a 0 i 1
+        // Musgo: visible a -1, invisible a 0 i 1
+        float alphaNormal = Mathf.Clamp01(currentState + 1f); 
+        float alphaMusgo = Mathf.Clamp01(1f - (currentState + 1f));
 
-        ActualizarMaterial(rendererNormal, alphaNormal);
-        ActualizarMaterial(rendererMusgo, alphaMusgo);
+        // En el punt 0 (normal), fem que les dues siguin visibles per seguretat
+        if (currentState > -0.1f && currentState < 0.1f) {
+            alphaNormal = 1f;
+            alphaMusgo = 0f; // O 1 si vols que es barregin
+        }
+
+        SetAlpha(rendererNormal, alphaNormal);
+        SetAlpha(rendererMusgo, alphaMusgo);
     }
 
-    void ActualizarMaterial(Renderer rend, float alpha)
+    void SetAlpha(Renderer r, float a)
     {
-        if (rend == null) return;
-        rend.enabled = (alpha > 0.01f); // Apagar si es invisible
-        Color c = rend.material.color;
-        c.a = alpha;
-        rend.material.color = c;
-    }
-
-    // Permitir que el CharacterController del jugador empuje la roca
-    void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        Rigidbody body = hit.collider.attachedRigidbody;
-        if (body == null || body.isKinematic) return;
-
-        Vector3 pushDir = new Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
-        // Si la masa es 500, la velocidad resultante será casi 0
-        body.linearVelocity = pushDir * (2.0f / body.mass);
+        if (r == null) return;
+        r.enabled = (a > 0.05f); // Si és molt transparent, l'apaguem
+        
+        // Accedim al color del material instanciat
+        Color c = r.material.color;
+        c.a = a;
+        r.material.color = c;
     }
 }
