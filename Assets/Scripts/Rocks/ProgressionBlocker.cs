@@ -5,25 +5,42 @@ public class ProgressionBlocker : MonoBehaviour
 {
     public List<GameObject> rocasDeBloqueo; 
     public float intervalo = -0.2f; 
-    public float masaFijaBloqueo = 500f; // <--- Nueva variable
+    public float masaFijaBloqueo = 500f;
 
-    void Update()
+    private void OnEnable()
     {
-        if (WorldState.Instance == null) return;
+        WorldState.OnWorldStateChanged += ActualizarRocas;
+    }
 
-        float estadoActual = WorldState.Instance.state;
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= ActualizarRocas;
+    }
 
+    void Start()
+    {
+        if (WorldState.Instance != null)
+        {
+            ActualizarRocas(WorldState.Instance.state);
+        }
+    }
+
+
+    private void ActualizarRocas(float estadoActual)
+    {
         for (int i = 0; i < rocasDeBloqueo.Count; i++)
         {
+            if (rocasDeBloqueo[i] == null) continue;
+
             float umbralParaEstaRoca = (i + 1) * intervalo;
 
+            
             if (estadoActual <= umbralParaEstaRoca)
             {
                 if (!rocasDeBloqueo[i].activeSelf)
                 {
                     rocasDeBloqueo[i].SetActive(true);
                     
-                    // Al activarse, buscamos su Rigidbody y le ponemos la masa de 500
                     Rigidbody rb = rocasDeBloqueo[i].GetComponent<Rigidbody>();
                     if (rb != null)
                     {

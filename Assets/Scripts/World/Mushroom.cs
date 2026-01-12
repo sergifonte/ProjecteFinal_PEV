@@ -16,8 +16,6 @@ public class Mushroom : MonoBehaviour
         {
             WorldState.Instance.AddState(stateValue);
             
-            Debug.Log("State changed by " + stateValue);
-            
             Destroy(gameObject);
 
             if (gameObject.CompareTag("Blue"))

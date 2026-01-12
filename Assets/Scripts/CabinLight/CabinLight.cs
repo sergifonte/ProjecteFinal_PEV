@@ -1,12 +1,12 @@
 using UnityEngine;
+using System.Collections; 
 
-public class CabinLightController : MonoBehaviour
+public class CabinLight : MonoBehaviour
 {
     private Light _light;
+    private Coroutine transitionCoroutine;
 
     [Header("Colores personalizados")]
-    
-    // Naranja cálido (255, 185, 83)
     public Color colorUtopia = new Color(1f, 0.725f, 0.325f); 
     public Color colorNeutral = new Color(1f, 0.98f, 0.85f); 
 
@@ -14,31 +14,58 @@ public class CabinLightController : MonoBehaviour
     public float intensidadMaxima = 3000f;
     public float transitionSpeed = 3f;
     
-    private float currentState;
+    private float currentState = 0f;
 
-    void Start()
+    void Awake()
     {
         _light = GetComponent<Light>();
     }
 
-    void Update()
+    private void OnEnable()
     {
-        if (WorldState.Instance == null) return;
+        WorldState.OnWorldStateChanged += IniciarTransicion;
+        // Sincronización inicial
+        if (WorldState.Instance != null) IniciarTransicion(WorldState.Instance.state);
+    }
 
-        currentState = Mathf.Lerp(currentState, WorldState.Instance.state, Time.deltaTime * transitionSpeed);
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= IniciarTransicion;
+    }
 
-        if (currentState >= 0)
+    // Este método se activa con el evento
+    private void IniciarTransicion(float nuevoEstado)
+    {
+        // Si ya había una transición en marcha, la paramos para empezar la nueva
+        if (transitionCoroutine != null) StopCoroutine(transitionCoroutine);
+        
+        // Arrancamos el proceso de cambio suave
+        transitionCoroutine = StartCoroutine(TransicionSuave(nuevoEstado));
+    }
+
+    // La Corrutina: Funciona como un Update pero solo cuando hace falta
+    IEnumerator TransicionSuave(float targetState)
+    {
+        // Mientras no hayamos llegado al valor objetivo (con un margen de error pequeño)
+        while (Mathf.Abs(currentState - targetState) > 0.001f)
         {
-            _light.color = Color.Lerp(colorNeutral, colorUtopia, currentState);
-        }
-        else
-        {
-            _light.color = colorNeutral;
-        }
 
-        float tIntensidad = Mathf.InverseLerp(-1f, 0.5f, currentState); 
-        _light.intensity = Mathf.Lerp(0f, intensidadMaxima, tIntensidad);
+            currentState = Mathf.Lerp(currentState, targetState, Time.deltaTime * transitionSpeed);
 
-        _light.enabled = (_light.intensity > 0.001f);
+            if (currentState >= 0)
+                _light.color = Color.Lerp(colorNeutral, colorUtopia, currentState);
+            else
+                _light.color = colorNeutral;
+
+            float tIntensidad = Mathf.InverseLerp(-1f, 0.5f, currentState); 
+            _light.intensity = Mathf.Lerp(0f, intensidadMaxima, tIntensidad);
+
+            _light.enabled = (_light.intensity > 0.001f);
+
+            yield return null; 
+        }
+        
+
+        currentState = targetState;
     }
 }

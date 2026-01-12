@@ -1,30 +1,54 @@
 using UnityEngine;
-using UnityEngine.UI; // Importante para usar el Slider
-using TMPro; // Importante para usar TextMeshPro
+using UnityEngine.UI;
+using TMPro;
 
 public class WorldStateUI : MonoBehaviour
 {
     public Slider worldSlider;
     public TextMeshProUGUI statusText;
 
-    void Update()
+    private void OnEnable()
     {
-        if (WorldState.Instance == null) return;
+        WorldState.OnWorldStateChanged += ActualizarInterfaz;
+    }
 
-        float currentState = WorldState.Instance.state;
-        worldSlider.value = currentState;
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= ActualizarInterfaz;
+    }
 
-        if (currentState < -0.1f)
+    void Start()
+    {
+        if (WorldState.Instance != null)
         {
-            statusText.text = "Distopía";
+            ActualizarInterfaz(WorldState.Instance.state);
         }
-        else if (currentState > 0.1f)
+    }
+
+    private void ActualizarInterfaz(float estadoActual)
+    {
+        if (worldSlider != null)
         {
-            statusText.text = "Utopía";
+            worldSlider.value = estadoActual;
         }
-        else
+
+        if (statusText != null)
         {
-            statusText.text = "Neutral";
+            if (estadoActual < -0.1f)
+            {
+                statusText.text = "Distopía";
+                statusText.color = Color.red;
+            }
+            else if (estadoActual > 0.1f)
+            {
+                statusText.text = "Utopía";
+                statusText.color = Color.green;
+            }
+            else
+            {
+                statusText.text = "Neutral";
+                statusText.color = Color.white;
+            }
         }
     }
 }

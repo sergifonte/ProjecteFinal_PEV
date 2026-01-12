@@ -1,27 +1,56 @@
 using UnityEngine;
+using System.Collections;
 
-public class CameraEffects : MonoBehaviour
+public class CameraFOV : MonoBehaviour
 {
-    public Camera _cam;
+    private Camera _cam;
     public float utopiaFOV = 75f;
     public float normalFOV = 60f;
     public float dystopiaFOV = 30f;
     public float transitionSpeed = 2f;
 
-    void Start() => _cam = GetComponent<Camera>();
+    
+    private Coroutine fovCoroutine;
 
-    void Update()
+    void Awake()
     {
-        if (WorldState.Instance == null) return;
+        _cam = GetComponent<Camera>();
+    }
 
+    private void OnEnable()
+    {
+        WorldState.OnWorldStateChanged += IniciarCambioFOV;
+        // Sincronización inicial
+        if (WorldState.Instance != null) IniciarCambioFOV(WorldState.Instance.state);
+    }
+
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= IniciarCambioFOV;
+    }
+
+    private void IniciarCambioFOV(float nuevoEstado)
+    {
+        if (fovCoroutine != null) StopCoroutine(fovCoroutine);
+        fovCoroutine = StartCoroutine(TransicionFOV(nuevoEstado));
+    }
+
+    IEnumerator TransicionFOV(float s)
+    {
         float targetFOV;
-        float s = WorldState.Instance.state;
-
         if (s > 0) 
             targetFOV = Mathf.Lerp(normalFOV, utopiaFOV, s);
         else 
             targetFOV = Mathf.Lerp(normalFOV, dystopiaFOV, -s);
 
-        _cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, targetFOV, Time.deltaTime * transitionSpeed);
+        while (Mathf.Abs(_cam.fieldOfView - targetFOV) > 0.01f)
+        {
+            _cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, targetFOV, Time.deltaTime * transitionSpeed);
+            yield return null;
+        }
+
+        _cam.fieldOfView = targetFOV;
     }
+
+    
 }

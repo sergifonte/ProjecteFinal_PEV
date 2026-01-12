@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    [Header("Ajustes Utopía (Estado 1)")]
+    [Header("ajustes utopía (estado 1)")]
     public float SpeedUtopia = 20f;
     public float GravityUtopia = -9.81f;
     public float JumpUtopia = 12f;
 
-    [Header("Ajustes Distopía (Estado -1)")]
+    [Header("ajustes distopía (estado -1)")]
     public float SpeedDistopia = 5f;
     public float GravityDistopia = -35f;
     public float JumpDistopia = 2f;
 
-    [Header("Variables Actuales")]
+    [Header("variables actuales (calculadas por evento)")]
     public float RotationSpeed = 0.2f;
     private float currentSpeed;
     private float currentGravity;
@@ -22,29 +22,41 @@ public class CharacterMovement : MonoBehaviour
     private InputHandler _input;
     private float _verticalVelocity;
 
-    void Start()
+    void Awake()
     {
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<InputHandler>();
     }
 
+    void Start()
+    {
+        if (WorldState.Instance != null)
+        {
+            ActualizarParametrosFisicos(WorldState.Instance.state);
+        }
+    }
+
+    private void OnEnable()
+    {
+        WorldState.OnWorldStateChanged += ActualizarParametrosFisicos;
+    }
+
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= ActualizarParametrosFisicos;
+    }
+
     void Update()
     {
-        ActualizarAtributosFisicos();
         Rotate();
         ApplyGravity();
-        CheckJump(); // Nueva función de salto
+        CheckJump();
         Move();
     }
 
-    private void ActualizarAtributosFisicos()
+    private void ActualizarParametrosFisicos(float estadoActual)
     {
-        if (WorldState.Instance == null) return;
-
-        // t va de 0 (Distopía) a 1 (Utopía)
-        float t = (WorldState.Instance.state + 1f) / 2f;
-
-        // Interpolamos los tres valores físicos
+        float t = (estadoActual + 1f) / 2f;
         currentSpeed = Mathf.Lerp(SpeedDistopia, SpeedUtopia, t);
         currentGravity = Mathf.Lerp(GravityDistopia, GravityUtopia, t);
         currentJumpForce = Mathf.Lerp(JumpDistopia, JumpUtopia, t);
@@ -52,8 +64,8 @@ public class CharacterMovement : MonoBehaviour
 
     private void Move()
     {
+       
         Vector3 moveDirection = transform.forward * _input.MoveInput.y;
-        // Usamos la velocidad calculada según el mundo
         Vector3 velocity = moveDirection * currentSpeed;
 
         velocity.y = _verticalVelocity;
@@ -64,19 +76,16 @@ public class CharacterMovement : MonoBehaviour
     {
         if (_controller.isGrounded)
         {
-            if (_verticalVelocity < 0)
-                _verticalVelocity = -2f;
+            if (_verticalVelocity < 0) _verticalVelocity = -2f;
         }
         else
         {
-            // Usamos la gravedad pesada o ligera según el mundo
             _verticalVelocity += currentGravity * Time.deltaTime;
         }
     }
 
     private void CheckJump()
     {
-        // Salta si está en el suelo y pulsas la barra espaciadora
         if (_controller.isGrounded && Input.GetButtonDown("Jump"))
         {
             _verticalVelocity = currentJumpForce;

@@ -5,22 +5,33 @@ public class TreeParentController : MonoBehaviour
     public GameObject trunk;
     public GameObject tree;
 
-    void Update()
+    private void OnEnable()
     {
-        if (WorldState.Instance == null) return;
+        WorldState.OnWorldStateChanged += ActualizarVisibilidadArbol;
+    }
 
-        float state = WorldState.Instance.state;
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= ActualizarVisibilidadArbol;
+    }
 
-        // Si el state és molt baix, només tronc visible
-        if (state <= -0.8f)
+    void Start()
+    {
+        if (WorldState.Instance != null)
         {
-            if (tree != null)
-                tree.SetActive(false);
+            ActualizarVisibilidadArbol(WorldState.Instance.state);
         }
-        else
+    }
+
+    private void ActualizarVisibilidadArbol(float state)
+    {
+        if (tree == null) return;
+
+        bool deberiaEstarActivo = state > -0.8f;
+
+        if (tree.activeSelf != deberiaEstarActivo)
         {
-            if (tree != null)
-                tree.SetActive(true);
+            tree.SetActive(deberiaEstarActivo);
         }
     }
 }

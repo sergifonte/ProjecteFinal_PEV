@@ -1,92 +1,101 @@
 using UnityEngine;
+using System.Collections;
 
 public class Fog : MonoBehaviour
 {
+    [Header("Colores")]
     public Color dystopiaFogColor = new Color(0.86f, 0.99f, 1.18f);
-    public Color normalFogColor = Color.clear;
+    public Color normalFogColor = Color.gray; // Cambiado de Clear para que se vea
     public Color utopiaFogColor = new Color(1f, 0.9f, 0.7f);
 
-
+    [Header("Densidades")]
     public float dystopiaFogDensity = 0.04f;
-    public float normalFogDensity = 0f;
-    public float utopiaFogDensity = 0.01f;
-
-
+    public float normalFogDensity = 0.01f;
+    public float utopiaFogDensity = 0.015f;
     
-    public float transition = 2f;
+    [Header("Ajustes")]
+    public float transitionSpeed = 2f;
 
-    private float currentFogDensity;
-    private Color currentFogColor;
+    private Coroutine fogCoroutine;
 
-    void Start()
+    void Awake()
     {
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Exponential;
-
-        ApplyImmediateFog();
     }
 
-    void Update()
+    private void OnEnable()
     {
-        if (WorldState.Instance == null)
-            return;
+        WorldState.OnWorldStateChanged += IniciarTransicionFog;
+    }
 
-        float state = WorldState.Instance.state;
+    private void OnDisable()
+    {
 
-        if (state < 0f)
+        WorldState.OnWorldStateChanged -= IniciarTransicionFog;
+    }
+
+    void Start()
+    {
+  
+        if (WorldState.Instance != null)
         {
-            float t = Mathf.InverseLerp(-1f, 0f, state);
+            CalcularYAplicarFog(WorldState.Instance.state);
+        }
+    }
 
-            currentFogDensity = Mathf.Lerp(
-                dystopiaFogDensity,
-                normalFogDensity,
-                t
-            );
+    private void IniciarTransicionFog(float nuevoEstado)
+    {
+        if (fogCoroutine != null) StopCoroutine(fogCoroutine);
+        fogCoroutine = StartCoroutine(TransicionSuaveFog(nuevoEstado));
+    }
 
-            currentFogColor = Color.Lerp(
-                dystopiaFogColor,
-                normalFogColor,
-                t
-            );
+    IEnumerator TransicionSuaveFog(float targetState)
+    {
+
+        float elapsed = 0f;
+        float duration = 1f / transitionSpeed;
+
+        Color startColor = RenderSettings.fogColor;
+        float startDensity = RenderSettings.fogDensity;
+
+
+        float targetDensity;
+        Color targetColor;
+
+        if (targetState < 0f)
+        {
+            float t = Mathf.InverseLerp(-1f, 0f, targetState);
+            targetDensity = Mathf.Lerp(dystopiaFogDensity, normalFogDensity, t);
+            targetColor = Color.Lerp(dystopiaFogColor, normalFogColor, t);
         }
         else
         {
-            float t = Mathf.InverseLerp(0f, 1f, state);
-
-            currentFogDensity = Mathf.Lerp(
-                normalFogDensity,
-                utopiaFogDensity,
-                t
-            );
-
-            currentFogColor = Color.Lerp(
-                normalFogColor,
-                utopiaFogColor,
-                t
-            );
+            float t = Mathf.InverseLerp(0f, 1f, targetState);
+            targetDensity = Mathf.Lerp(normalFogDensity, utopiaFogDensity, t);
+            targetColor = Color.Lerp(normalFogColor, utopiaFogColor, t);
         }
 
-        RenderSettings.fogDensity = Mathf.Lerp(
-            RenderSettings.fogDensity,
-            currentFogDensity,
-            Time.deltaTime * transition
-        );
 
-        RenderSettings.fogColor = Color.Lerp(
-            RenderSettings.fogColor,
-            currentFogColor,
-            Time.deltaTime * transition
-        );
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float step = elapsed / duration;
+
+            RenderSettings.fogDensity = Mathf.Lerp(startDensity, targetDensity, step);
+            RenderSettings.fogColor = Color.Lerp(startColor, targetColor, step);
+            
+            yield return null;
+        }
+
+
+        RenderSettings.fogDensity = targetDensity;
+        RenderSettings.fogColor = targetColor;
     }
 
 
-    void ApplyImmediateFog()
+    void CalcularYAplicarFog(float state)
     {
-        if (WorldState.Instance == null)
-            return;
-
-        float state = WorldState.Instance.state;
-
         if (state < 0f)
         {
             float t = Mathf.InverseLerp(-1f, 0f, state);

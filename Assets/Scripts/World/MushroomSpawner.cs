@@ -52,8 +52,6 @@ public class MushroomSpawner : MonoBehaviour
                 respawned = true;
             }
         }
-
-        Debug.Log("Active Mushrooms: " + activeMushrooms.Count);
     }
 
     bool IsPositionOccupied(Vector3 position)

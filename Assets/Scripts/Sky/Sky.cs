@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Sky : MonoBehaviour
 {
@@ -23,28 +24,55 @@ public class Sky : MonoBehaviour
     public float transitionSpeed = 2f;
 
     private float currentState;
+    private Coroutine skyCoroutine;
+
+    private void OnEnable()
+    {
+        WorldState.OnWorldStateChanged += IniciarTransicionSky;
+    }
+
+    private void OnDisable()
+    {
+        WorldState.OnWorldStateChanged -= IniciarTransicionSky;
+    }
 
     void Start()
     {
-        ApplyImmediateState();
+        if (WorldState.Instance != null)
+        {
+            currentState = WorldState.Instance.state;
+            UpdateLighting(currentState);
+        }
     }
 
-    void Update()
+    private void IniciarTransicionSky(float nuevoEstado)
     {
-        if (WorldState.Instance == null)
-            return;
+        if (skyCoroutine != null) StopCoroutine(skyCoroutine);
+        skyCoroutine = StartCoroutine(TransicionSuaveSky(nuevoEstado));
+    }
 
-        currentState = Mathf.Lerp(
-            currentState,
-            WorldState.Instance.state,
-            Time.deltaTime * transitionSpeed
-        );
-
+    IEnumerator TransicionSuaveSky(float targetState)
+    {
+       
+        while (Mathf.Abs(currentState - targetState) > 0.001f)
+        {
+          
+            currentState = Mathf.Lerp(currentState, targetState, Time.deltaTime * transitionSpeed);
+            
+            
+            UpdateLighting(currentState);
+            
+            yield return null;
+        }
+        
+        currentState = targetState;
         UpdateLighting(currentState);
     }
 
     void UpdateLighting(float state)
     {
+        if (sunLight == null) return;
+
         if (state < 0)
         {
             float t = Mathf.InverseLerp(-1f, 0f, state);
@@ -53,7 +81,8 @@ public class Sky : MonoBehaviour
             sunLight.intensity = Mathf.Lerp(dystopiaSunIntensity, normalSunIntensity, t);
             RenderSettings.ambientLight = Color.Lerp(dystopiaAmbient, normalAmbient, t);
 
-            RenderSettings.skybox.Lerp(dystopiaSkybox, normalSkybox, t);
+            if (RenderSettings.skybox != null)
+                RenderSettings.skybox.Lerp(dystopiaSkybox, normalSkybox, t);
         }
         else
         {
@@ -63,15 +92,11 @@ public class Sky : MonoBehaviour
             sunLight.intensity = Mathf.Lerp(normalSunIntensity, utopiaSunIntensity, t);
             RenderSettings.ambientLight = Color.Lerp(normalAmbient, utopiaAmbient, t);
 
-            RenderSettings.skybox.Lerp(normalSkybox, utopiaSkybox, t);
+            if (RenderSettings.skybox != null)
+                RenderSettings.skybox.Lerp(normalSkybox, utopiaSkybox, t);
         }
 
+       
         DynamicGI.UpdateEnvironment();
-    }
-
-    void ApplyImmediateState()
-    {
-        currentState = WorldState.Instance != null ? WorldState.Instance.state : 0f;
-        UpdateLighting(currentState);
     }
 }
