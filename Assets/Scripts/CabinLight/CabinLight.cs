@@ -33,20 +33,15 @@ public class CabinLight : MonoBehaviour
         WorldState.OnWorldStateChanged -= IniciarTransicion;
     }
 
-    // Este método se activa con el evento
     private void IniciarTransicion(float nuevoEstado)
     {
-        // Si ya había una transición en marcha, la paramos para empezar la nueva
         if (transitionCoroutine != null) StopCoroutine(transitionCoroutine);
         
-        // Arrancamos el proceso de cambio suave
         transitionCoroutine = StartCoroutine(TransicionSuave(nuevoEstado));
     }
 
-    // La Corrutina: Funciona como un Update pero solo cuando hace falta
     IEnumerator TransicionSuave(float targetState)
     {
-        // Mientras no hayamos llegado al valor objetivo (con un margen de error pequeño)
         while (Mathf.Abs(currentState - targetState) > 0.001f)
         {
 
