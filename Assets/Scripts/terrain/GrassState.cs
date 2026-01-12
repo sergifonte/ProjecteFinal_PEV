@@ -7,7 +7,7 @@ public class GrassState : MonoBehaviour
 
     [Header("Colores de la hierba")]
     public Color dystopiaColor = new Color(0.6f, 0.6f, 0.2f);
-    public Color normalColor = new Color(0.376f, 0.545f, 0.29f);
+    public Color normalColor = new Color(0.239f, 0.447f, 0.0f);
     public Color utopiaColor = new Color(0.2f, 1f, 0.3f);
 
     [Header("Colores de partículas")]
