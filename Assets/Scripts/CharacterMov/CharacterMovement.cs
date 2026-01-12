@@ -3,17 +3,17 @@ using UnityEngine;
 public class CharacterMovement : MonoBehaviour
 {
     [Header("ajustes utopía (estado 1)")]
-    public float SpeedUtopia = 20f;
+    public float SpeedUtopia = 8f;
     public float GravityUtopia = -9.81f;
     public float JumpUtopia = 12f;
 
     [Header("ajustes distopía (estado -1)")]
-    public float SpeedDistopia = 5f;
+    public float SpeedDistopia = 4f;
     public float GravityDistopia = -35f;
-    public float JumpDistopia = 2f;
+    public float JumpDistopia = 4f;
 
     [Header("variables actuales (calculadas por evento)")]
-    public float RotationSpeed = 0.2f;
+    public float RotationSpeed = 0.5f;
     private float currentSpeed;
     private float currentGravity;
     private float currentJumpForce;

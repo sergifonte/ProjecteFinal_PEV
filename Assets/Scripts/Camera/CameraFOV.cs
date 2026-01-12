@@ -4,9 +4,9 @@ using System.Collections;
 public class CameraFOV : MonoBehaviour
 {
     private Camera _cam;
-    public float utopiaFOV = 75f;
+    public float utopiaFOV = 80f;
     public float normalFOV = 60f;
-    public float dystopiaFOV = 30f;
+    public float dystopiaFOV = 40f;
     public float transitionSpeed = 2f;
 
     
